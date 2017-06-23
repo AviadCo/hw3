@@ -16,5 +16,10 @@
       <artifactId>sub-external</artifactId>
       <version>1.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-assistedinject</artifactId>
+      <version>4.1.0</version>
+	</dependency>
   </dependencies>
 </project>
