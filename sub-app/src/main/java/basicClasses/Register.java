@@ -5,15 +5,17 @@ public class Register {
 	final static String REGISTER_SPLITER = " ";
 	
 	private String userID;
-	private String magazineID;
+	private String journalID;
+	private Long journalPrice;
 	private String type;
 	
 	public static final String SUBSCRIPTION_TYPE = "SUBSCRIPTION_TYPE";
 	public static final String CANCEL_TYPE       = "CANCEL_TYPE";
 	
-	public Register(String userID, String magazineID, String type) {
+	public Register(String userID, String journalID, Long journalPrice, String type) {
 		this.userID = userID;
-		this.magazineID = magazineID;
+		this.journalID = journalID;
+		this.journalPrice = journalPrice;
 		this.type = type;
 	}
 	
@@ -23,11 +25,18 @@ public class Register {
 	public void setUserID(String userID) {
 		this.userID = userID;
 	}
-	public String getMagazineID() {
-		return magazineID;
+	public String getJournalID() {
+		return journalID;
 	}
-	public void setMagazineID(String magazineID) {
-		this.magazineID = magazineID;
+	public void setJournalID(String journalID) {
+		this.journalID = journalID;
+	}
+	public Long getJournalPrice() {
+		return journalPrice;
+	}
+
+	public void setJournalPrice(Long journalPrice) {
+		this.journalPrice = journalPrice;
 	}
 	public String getType() {
 		return type;
@@ -40,10 +49,10 @@ public class Register {
 	public static Register createObject(String s) {
 		String arr[] = s.split(REGISTER_SPLITER);
 		
-		return new Register(arr[0], arr[1], arr[2]);
+		return new Register(arr[0], arr[1], Long.parseLong(arr[2]), arr[3]);
 	}
 
 	public static String createString(Register r) {
-		return r.userID + REGISTER_SPLITER + r.magazineID + REGISTER_SPLITER + r.type;
+		return r.userID + REGISTER_SPLITER + r.journalID + REGISTER_SPLITER + r.journalPrice + REGISTER_SPLITER + r.type;
 	}
 }

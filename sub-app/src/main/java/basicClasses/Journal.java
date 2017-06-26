@@ -40,6 +40,9 @@ public class Journal {
 	public void setRegisterations(List<Register> registerations) {
 		this.registerations = registerations;
 	}
+	public void addRegisteration(Register register) {
+		registerations.add(register);
+	}
 	
 	public static Journal createObject(String s) {
 		String arr[] = s.split(JOURNAL_SPLITER);

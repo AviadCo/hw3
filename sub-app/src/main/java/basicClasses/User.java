@@ -9,19 +9,15 @@ public class User {
 	private final static String USER_SPLITER = ",";
 	
 	private String userID;
-	private String magazineID;
 	private List<Register> registerations;
 	
-	public User(String userID, String magazineID, List<Register> registerationList) {
+	public User(String userID) {
 		this.userID = userID;
-		this.magazineID = magazineID;
+		this.registerations = new ArrayList<Register>();
+	}
+	public User(String userID, List<Register> registerationList) {
+		this.userID = userID;
 		this.registerations = registerationList;
-	}
-	public String getMagazineID() {
-		return magazineID;
-	}
-	public void setMagazineID(String magazineID) {
-		this.magazineID = magazineID;
 	}
 	public List<Register> getRegisterations() {
 		return registerations;
@@ -35,6 +31,9 @@ public class User {
 	public void setUserID(String userID) {
 		this.userID = userID;
 	}
+	public void addRegisteration(Register register) {
+		registerations.add(register);
+	}
 	
 	public static User createObject(String s) {
 		String arr[] = s.split(USER_SPLITER);
@@ -44,13 +43,13 @@ public class User {
 			registerationList.add(Register.createObject(registerStr));
 		}
 				
-		return new User(arr[0], arr[1], registerationList);
+		return new User(arr[0], registerationList);
 	}
 
 	public static String createString(User u) {
 		String userStr = "";
 		
-		userStr += u.userID + USER_SPLITER + u.magazineID;
+		userStr += u.userID;
 		
 		for (Register register : u.registerations) {
 			userStr += USER_SPLITER + Register.createString(register);

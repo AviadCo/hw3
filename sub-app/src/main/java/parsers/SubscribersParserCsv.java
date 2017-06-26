@@ -35,7 +35,7 @@ public class SubscribersParserCsv {
 			String elementArr[] = element.split(",");
 			
 			if (elementArr[0].equals(SUBSCRIPTION_TYPE_TAG) || elementArr[0].equals(CANCEL_TYPE_TAG)) {
-			    registerations.add(new Register (elementArr[1], elementArr[2],
+			    registerations.add(new Register (elementArr[1], elementArr[2], Long.valueOf(0),
 			    		 elementArr[0].equals(SUBSCRIPTION_TYPE_TAG) ? 
 						 Register.SUBSCRIPTION_TYPE : Register.CANCEL_TYPE));			}
 		}
@@ -48,7 +48,7 @@ public class SubscribersParserCsv {
 	 * @param csvData - the csv string of the journals
 	 * @return - list of Journal
 	 */
-	public static List<Journal> createListOfJournals(String csvData)
+	public static Map<String, Journal> createListOfJournals(String csvData)
 	{
 		List<String> allData = Arrays.asList(csvData.split("\n"));
 		Map<String, Journal> journalsMap = new HashMap<String, Journal>();
@@ -61,6 +61,6 @@ public class SubscribersParserCsv {
 			}
 		}
 		
-	    return new ArrayList<Journal>(journalsMap.values());
+	    return journalsMap;
 	}
 }

@@ -50,7 +50,7 @@ public class SubscribersParserJson {
 				    final String userID    = (String) obj.get(USER_ID_TAG);
 				    final String journalID = (String) obj.get(JOURNAL_ID_TAG);
 				    
-				    registerations.add(new Register (userID, journalID,
+				    registerations.add(new Register (userID, journalID, Long.valueOf(0),
 				    								 type.equals(SUBSCRIPTION_TYPE_TAG) ? 
 				    								 Register.SUBSCRIPTION_TYPE : Register.CANCEL_TYPE));
 			    }
@@ -68,7 +68,7 @@ public class SubscribersParserJson {
 	 * @return - list of Journal
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<Journal> createListOfJournals(String jsonData)
+	public static Map<String, Journal> createListOfJournals(String jsonData)
 	{
 		Map<String, Journal> journalsMap = new HashMap<String, Journal>();
 		
@@ -88,6 +88,6 @@ public class SubscribersParserJson {
 			throw new RuntimeException();
 		}
 		
-	    return new ArrayList<Journal>(journalsMap.values());
+	    return journalsMap;
 	}
 }
