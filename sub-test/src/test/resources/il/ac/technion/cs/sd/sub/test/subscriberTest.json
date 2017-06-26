@@ -1,0 +1,37 @@
+[
+  {"type": "subscription", "user-id": "user1", "journal-id": "journal1"},
+  {"type": "journal", "journal-id": "journal1", "price": 60}
+  {"type": "journal", "journal-id": "journal1", "price": 60}
+  {"type": "journal", "journal-id": "journal4", "price": 20}
+  {"type": "journal", "journal-id": "journal5", "price": 30}
+  {"type": "journal", "journal-id": "journal2", "price": 700}
+  {"type": "journal", "journal-id": "journal3", "price": 10}
+  {"type": "journal", "journal-id": "journal1", "price": 150}
+  {"type": "subscription", "user-id": "user2", "journal-id": "journal1"},
+  {"type": "subscription", "user-id": "user3", "journal-id": "journal1"},
+  {"type": "subscription", "user-id": "user4", "journal-id": "journal1"},
+  {"type": "subscription", "user-id": "user5", "journal-id": "journal1"},
+  {"type": "subscription", "user-id": "userNE", "journal-id": "notExist"},
+  {"type": "subscription", "user-id": "user6", "journal-id": "journal1"},
+  {"type": "cancel", "user-id": "user3", "journal-id": "journal1"},
+  {"type": "subscription", "user-id": "user3", "journal-id": "journal1"},
+  {"type": "cancel", "user-id": "user2", "journal-id": "journal1"},
+  {"type": "cancel", "user-id": "user2", "journal-id": "journal1"},
+  {"type": "cancel", "user-id": "user2", "journal-id": "journal1"},
+  {"type": "cancel", "user-id": "user4", "journal-id": "journal1"},
+  {"type": "subscription", "user-id": "user4", "journal-id": "journal1"},
+  {"type": "subscription", "user-id": "user2", "journal-id": "journal2"},
+  {"type": "subscription", "user-id": "user3", "journal-id": "journal3"},
+  {"type": "subscription", "user-id": "user4", "journal-id": "journal4"},
+  {"type": "subscription", "user-id": "user4", "journal-id": "journal4"},
+  {"type": "subscription", "user-id": "user2", "journal-id": "journal2"},
+  {"type": "subscription", "user-id": "user3", "journal-id": "journal3"},
+  {"type": "cancel", "user-id": "userNE", "journal-id": "notExist"},
+  {"type": "subscription", "user-id": "user2", "journal-id": "journal3"},
+  {"type": "subscription", "user-id": "user3", "journal-id": "journal3"},
+  {"type": "subscription", "user-id": "user5", "journal-id": "journal3"},
+  {"type": "subscription", "user-id": "user3", "journal-id": "journal3"},
+  {"type": "subscription", "user-id": "user4", "journal-id": "journal4"},
+  {"type": "subscription", "user-id": "user1", "journal-id": "journal4"},
+  {"type": "cancel", "user-id": "user2", "journal-id": "journal5"},
+]

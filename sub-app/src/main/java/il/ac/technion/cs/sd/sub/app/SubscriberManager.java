@@ -9,6 +9,9 @@ import java.util.OptionalInt;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import basicClasses.Journal;
 import basicClasses.Register;
 import basicClasses.User;
@@ -18,6 +21,16 @@ import parsers.SubscribersParserJson;
 
 public class SubscriberManager implements SubscriberInitializer, SubscriberReader {
 
+	/* Databases names */
+	public static final String USERS_DICT_NAME    = "USERS_DICT";
+	public static final String JOURNALS_DICT_NAME = "JOURNALS_DICT";
+	
+	@Inject
+	public SubscriberManager(@Named(USERS_DICT_NAME) Dict users, @Named(JOURNALS_DICT_NAME) Dict journals) {
+		this.users    = users;
+		this.journals = journals;
+	}
+	
 	Dict users;
 	Dict journals;
 	
