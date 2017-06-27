@@ -11,13 +11,18 @@ import org.junit.rules.Timeout;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 
 public class SubscriberManagerTest {
 
-  //@Rule public Timeout globalTimeout = Timeout.seconds(30);
+  @Rule public Timeout globalTimeout = Timeout.seconds(50);
 
   private static Injector setupAndGetInjector(String fileName) throws Exception {
       String fileContents =
@@ -87,4 +92,122 @@ public class SubscriberManagerTest {
 		    assertFalse(reader.wasCanceled("user1", "notExist").get().get());
 	  }
   }  
+  
+  @Test
+  public void getSubscribedJournalsAndGetAllSubscriptionsTest() throws Exception {
+	  String [] testFiles = { "SubscriberTest.csv", "SubscriberTest.json" };
+	  
+	  for (String testFile : testFiles) {
+		    Injector injector = setupAndGetInjector(testFile);
+		    SubscriberReader reader = injector.getInstance(SubscriberReader.class);
+		    
+		    /* getSubscribedJournals */
+		    assertEquals(Arrays.asList(), reader.getSubscribedJournals( "userNE").get());
+		    assertEquals(Arrays.asList("journal1", "journal4"), reader.getSubscribedJournals( "user1").get());
+		    assertEquals(Arrays.asList("journal2", "journal3"), reader.getSubscribedJournals( "user2").get());
+		    assertEquals(Arrays.asList("journal1", "journal3"), reader.getSubscribedJournals( "user3").get());
+		    assertEquals(Arrays.asList("journal1", "journal4"), reader.getSubscribedJournals( "user4").get());
+		    assertEquals(Arrays.asList("journal1", "journal3"), reader.getSubscribedJournals( "user5").get());
+
+		    /* getAllSubscriptions */
+		    Map<String, List<Boolean>> map1 = new HashMap<String, List<Boolean>>();
+		    map1.put("journal1", Arrays.asList(true));
+		    map1.put("journal4", Arrays.asList(true));
+		    assertEquals(map1, reader.getAllSubscriptions("user1").get());
+		    
+		    Map<String, List<Boolean>> map2 = new HashMap<String, List<Boolean>>();
+		    map2.put("journal1", Arrays.asList(true, false));
+		    map2.put("journal2", Arrays.asList(true, true));
+		    map2.put("journal3", Arrays.asList(true));
+		    assertEquals(map2, reader.getAllSubscriptions("user2").get());
+		    
+		    Map<String, List<Boolean>> map3 = new HashMap<String, List<Boolean>>();
+		    map3.put("journal1", Arrays.asList(true, false, true));
+		    map3.put("journal3", Arrays.asList(true, true, true, true));
+		    assertEquals(map3, reader.getAllSubscriptions("user3").get());
+		    
+		    Map<String, List<Boolean>> map4 = new HashMap<String, List<Boolean>>();
+		    map4.put("journal1", Arrays.asList(true, false, true, true));
+		    map4.put("journal4", Arrays.asList(true, true));
+		    assertEquals(map4, reader.getAllSubscriptions("user4").get());
+		    
+		    Map<String, List<Boolean>> map5 = new HashMap<String, List<Boolean>>();
+		    map5.put("journal1", Arrays.asList(true));
+		    map5.put("journal3", Arrays.asList(true));
+		    assertEquals(map5, reader.getAllSubscriptions("user5").get());
+	  }
+  } 
+  
+  @Test
+  public void getMonthlyBudgetGetMonthlyIncomeTest() throws Exception {
+	  String [] testFiles = { "SubscriberTest.csv", "SubscriberTest.json" };
+	  
+	  for (String testFile : testFiles) {
+		    Injector injector = setupAndGetInjector(testFile);
+		    SubscriberReader reader = injector.getInstance(SubscriberReader.class);
+		    
+		    /* getMonthlyBudget */
+		    assertEquals(OptionalInt.empty(), reader.getMonthlyBudget("userNE").get());
+		    assertEquals(OptionalInt.of(170), reader.getMonthlyBudget("user1").get());
+		    assertEquals(OptionalInt.of(710), reader.getMonthlyBudget("user2").get());
+		    assertEquals(OptionalInt.of(160), reader.getMonthlyBudget("user3").get());
+		    assertEquals(OptionalInt.of(170), reader.getMonthlyBudget("user4").get());
+		    assertEquals(OptionalInt.of(160), reader.getMonthlyBudget("user5").get());
+
+		    /* getMonthlyIncome */
+		    //TODO check about cancel + if multiple scribe the same journal
+		    assertEquals(OptionalInt.empty(), reader.getMonthlyIncome("NotExist").get());
+		    assertEquals(OptionalInt.of(750), reader.getMonthlyIncome("journal1").get());
+		    assertEquals(OptionalInt.of(700), reader.getMonthlyIncome("journal2").get());
+		    assertEquals(OptionalInt.of(30), reader.getMonthlyIncome("journal3").get());
+		    assertEquals(OptionalInt.of(40), reader.getMonthlyIncome("journal4").get());
+		    assertEquals(OptionalInt.of(0), reader.getMonthlyIncome("journal5").get());
+	  }
+  } 
+  
+  @Test
+  public void getSubscribedUsersGetSubscribersTest() throws Exception {
+	  String [] testFiles = { "SubscriberTest.csv", "SubscriberTest.json" };
+	  
+	  for (String testFile : testFiles) {
+		    Injector injector = setupAndGetInjector(testFile);
+		    SubscriberReader reader = injector.getInstance(SubscriberReader.class);
+		    
+		    /* getSubscribedUsers */
+		    assertEquals(Arrays.asList(), reader.getSubscribedUsers("NotExist").get());
+		    assertEquals(Arrays.asList("user1", "user3", "user4", "user5", "user6"), reader.getSubscribedUsers("journal1").get());
+		    assertEquals(Arrays.asList("user2"), reader.getSubscribedUsers("journal2").get());
+		    assertEquals(Arrays.asList("user2", "user3", "user5"), reader.getSubscribedUsers("journal3").get());
+		    assertEquals(Arrays.asList("user1", "user4"), reader.getSubscribedUsers("journal4").get());
+		    assertEquals(Arrays.asList(), reader.getSubscribedUsers("journal5").get());
+
+		    /* getSubscribers */
+		    Map<String, List<Boolean>> map1 = new HashMap<String, List<Boolean>>();
+		    map1.put("user1", Arrays.asList(true));
+		    map1.put("user2", Arrays.asList(true, false));
+		    map1.put("user3", Arrays.asList(true, false, true));
+		    map1.put("user4", Arrays.asList(true, false, true, true));
+		    map1.put("user5", Arrays.asList(true));
+		    map1.put("user6", Arrays.asList(true));
+		    assertEquals(map1, reader.getSubscribers("journal1").get());
+		    
+		    Map<String, List<Boolean>> map2 = new HashMap<String, List<Boolean>>();
+		    map2.put("user2", Arrays.asList(true, true));
+		    assertEquals(map2, reader.getSubscribers("journal2").get());
+		    
+		    Map<String, List<Boolean>> map3 = new HashMap<String, List<Boolean>>();
+		    map3.put("user2", Arrays.asList(true));
+		    map3.put("user3", Arrays.asList(true, true, true, true));
+		    map3.put("user5", Arrays.asList(true));
+		    assertEquals(map3, reader.getSubscribers("journal3").get());
+		    
+		    Map<String, List<Boolean>> map4 = new HashMap<String, List<Boolean>>();
+		    map4.put("user1", Arrays.asList(true));
+		    map4.put("user4", Arrays.asList(true, true));
+		    assertEquals(map4, reader.getSubscribers("journal4").get());
+		    
+		    Map<String, List<Boolean>> map5 = new HashMap<String, List<Boolean>>();
+		    assertEquals(map5, reader.getSubscribers("journal5").get());
+	  }
+  } 
 }

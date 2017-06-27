@@ -238,16 +238,15 @@ public class SubscriberManager implements SubscriberInitializer, SubscriberReade
 				for (Register registeration : registerations) {
 					if (registeration.getType().equals(Register.SUBSCRIPTION_TYPE)) {
 						journalList.add(true);
-					} else if (journalList.isEmpty()) {
-						/* Registration is cancel type and the list is empty */
-						journalList.add(false);
-					} else if (journalList.get(journalList.size() - 1)) {
+					} else if (!journalList.isEmpty() && journalList.get(journalList.size() - 1)) {
 						/* Registration is cancel type and the list is not empty and last registeration wasn't cancel */
 						journalList.add(false);
 					}
 				}
 				
-				journals.put(registerations.get(0).getJournalID(), journalList);
+				if (!journalList.isEmpty()) {
+					journals.put(registerations.get(0).getJournalID(), journalList);					
+				}
 			}
 			
 			return journals;		
@@ -342,16 +341,15 @@ public class SubscriberManager implements SubscriberInitializer, SubscriberReade
 				for (Register registeration : registerations) {
 					if (registeration.getType().equals(Register.SUBSCRIPTION_TYPE)) {
 						journalList.add(true);
-					} else if (journalList.isEmpty()) {
-						/* Registration is cancel type and the list is empty */
-						journalList.add(false);
-					} else if (journalList.get(journalList.size() - 1)) {
+					} else if (!journalList.isEmpty() && journalList.get(journalList.size() - 1)) {
 						/* Registration is cancel type and the list is not empty and last registeration wasn't cancel */
 						journalList.add(false);
 					}
 				}
 				
-				journals.put(registerations.get(0).getJournalID(), journalList);
+				if (!journalList.isEmpty()) {
+					journals.put(registerations.get(0).getUserID(), journalList);					
+				}
 			}
 			
 			return journals;		

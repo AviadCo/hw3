@@ -22,7 +22,7 @@
   {"type": "subscription", "user-id": "user4", "journal-id": "journal1"},
   {"type": "subscription", "user-id": "user2", "journal-id": "journal2"},
   {"type": "subscription", "user-id": "user3", "journal-id": "journal3"},
-  {"type": "subscription", "user-id": "user4", "journal-id": "journal4"},
+  {"type": "subscription", "user-id": "user4", "journal-id": "journal1"},
   {"type": "subscription", "user-id": "user4", "journal-id": "journal4"},
   {"type": "subscription", "user-id": "user2", "journal-id": "journal2"},
   {"type": "subscription", "user-id": "user3", "journal-id": "journal3"},
