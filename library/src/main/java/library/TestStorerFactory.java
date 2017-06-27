@@ -23,7 +23,6 @@ public class TestStorerFactory implements FutureLineStorageFactory {
 				try {
 					Thread.sleep(store.size()*100);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

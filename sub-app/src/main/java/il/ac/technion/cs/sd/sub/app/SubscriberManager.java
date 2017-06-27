@@ -36,24 +36,28 @@ public class SubscriberManager implements SubscriberInitializer, SubscriberReade
 	
 	private CompletableFuture<Void> initializeDictionaries(List<Register> registerations,
 										Map<String, Journal> journalsWithoutRegisterations) {	
-		List<Register> validRegisterations = new ArrayList<Register>();
 		Map <String, User> usersMap = new HashMap<String, User>();
+		List<Register> registerationWithPrices = new ArrayList<Register>();
 		
 		for (Register register : registerations) {
 			if (journalsWithoutRegisterations.containsKey(register.getJournalID())) {
 				Journal journal = journalsWithoutRegisterations.get(register.getJournalID());
 				
 				register.setJournalPrice(journal.getPrice());
-				
 				journal.addRegisteration(register);
 				journalsWithoutRegisterations.put(register.getJournalID(), journal);
 				
 				/* Registration is valid only journalID exists */
-				validRegisterations.add(register);
+				registerationWithPrices.add(register);
+			} else {
+				/* journal doesn't exist, register will get value 0 */
+				register.setJournalPrice(Long.valueOf(0));
+				register.setType(Register.FAKE_TYPE);
+				registerationWithPrices.add(register);
 			}
 		}
 		
-		for (Register register : validRegisterations) {
+		for (Register register : registerationWithPrices) {
 			if (usersMap.containsKey(register.getUserID())) {
 				User user = usersMap.get(register.getUserID());
 				
@@ -238,15 +242,13 @@ public class SubscriberManager implements SubscriberInitializer, SubscriberReade
 				for (Register registeration : registerations) {
 					if (registeration.getType().equals(Register.SUBSCRIPTION_TYPE)) {
 						journalList.add(true);
-					} else if (!journalList.isEmpty() && journalList.get(journalList.size() - 1)) {
+					} else if (journalList.isEmpty() || journalList.get(journalList.size() - 1)) {
 						/* Registration is cancel type and the list is not empty and last registeration wasn't cancel */
 						journalList.add(false);
 					}
 				}
 				
-				if (!journalList.isEmpty()) {
-					journals.put(registerations.get(0).getJournalID(), journalList);					
-				}
+				journals.put(registerations.get(0).getJournalID(), journalList);
 			}
 			
 			return journals;		
@@ -341,15 +343,13 @@ public class SubscriberManager implements SubscriberInitializer, SubscriberReade
 				for (Register registeration : registerations) {
 					if (registeration.getType().equals(Register.SUBSCRIPTION_TYPE)) {
 						journalList.add(true);
-					} else if (!journalList.isEmpty() && journalList.get(journalList.size() - 1)) {
+					} else if (journalList.isEmpty() || journalList.get(journalList.size() - 1)) {
 						/* Registration is cancel type and the list is not empty and last registeration wasn't cancel */
 						journalList.add(false);
 					}
 				}
 				
-				if (!journalList.isEmpty()) {
-					journals.put(registerations.get(0).getUserID(), journalList);					
-				}
+				journals.put(registerations.get(0).getUserID(), journalList);					
 			}
 			
 			return journals;		

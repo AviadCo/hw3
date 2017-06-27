@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class SubscriberManagerTest {
 
-  @Rule public Timeout globalTimeout = Timeout.seconds(50);
+  //@Rule public Timeout globalTimeout = Timeout.seconds(50);
 
   private static Injector setupAndGetInjector(String fileName) throws Exception {
       String fileContents =
@@ -48,8 +48,8 @@ public class SubscriberManagerTest {
 		    assertTrue(reader.isSubscribed("user4", "journal4").get().get());
 		    assertFalse(reader.isSubscribed("user2", "journal1").get().get()); // canceled
 		    assertTrue(reader.isSubscribed("user3", "journal1").get().get()); // canceled and registered again
-		    assertEquals(Optional.empty(), reader.isSubscribed("userNE", "notExist").get());
-		    assertEquals(Optional.empty(), reader.isSubscribed("userNE", "journal1").get());
+		    assertFalse(reader.isSubscribed("userNE", "notExist").get().get());
+		    assertFalse(reader.isSubscribed("userNE", "journal1").get().get());
 		    assertFalse(reader.isSubscribed("user1", "notExist").get().get());
 
 		    /* wasSubscribed */
@@ -58,8 +58,8 @@ public class SubscriberManagerTest {
 		    assertTrue(reader.wasSubscribed("user2", "journal1").get().get()); // canceled
 		    assertTrue(reader.wasSubscribed("user3", "journal1").get().get()); // canceled and registered again
 		    assertFalse(reader.wasSubscribed("user2", "journal5").get().get()); // only canceled
-		    assertEquals(Optional.empty(), reader.wasSubscribed("userNE", "notExist").get());
-		    assertEquals(Optional.empty(), reader.wasSubscribed("userNE", "journal1").get());
+		    assertFalse(reader.wasSubscribed("userNE", "notExist").get().get());
+		    assertFalse(reader.wasSubscribed("userNE", "journal1").get().get());
 		    assertFalse(reader.wasSubscribed("user1", "notExist").get().get());
 	  }
   }  
@@ -77,8 +77,8 @@ public class SubscriberManagerTest {
 		    assertFalse(reader.isCanceled("user4", "journal4").get().get());
 		    assertTrue(reader.isCanceled("user2", "journal1").get().get()); // canceled
 		    assertFalse(reader.isCanceled("user3", "journal1").get().get()); // canceled and registered again
-		    assertEquals(Optional.empty(), reader.isCanceled( "userNE", "notExist").get());
-		    assertEquals(Optional.empty(), reader.isCanceled("userNE", "journal1").get());
+		    assertFalse(reader.isCanceled( "userNE", "notExist").get().get());
+		    assertFalse(reader.isCanceled("userNE", "journal1").get().get());
 		    assertFalse(reader.isCanceled("user1", "notExist").get().get());
 
 		    /* wasCanceled */
@@ -87,8 +87,8 @@ public class SubscriberManagerTest {
 		    assertTrue(reader.wasCanceled("user2", "journal1").get().get()); // canceled
 		    assertTrue(reader.wasCanceled("user3", "journal1").get().get()); // canceled and registered again
 		    assertFalse(reader.wasCanceled("user2", "journal5").get().get()); // only canceled
-		    assertEquals(Optional.empty(), reader.wasCanceled("userNE", "notExist").get());
-		    assertEquals(Optional.empty(), reader.wasCanceled("userNE", "journal1").get());
+		    assertFalse(reader.wasCanceled("userNE", "notExist").get().get());
+		    assertFalse(reader.wasCanceled("userNE", "journal1").get().get());
 		    assertFalse(reader.wasCanceled("user1", "notExist").get().get());
 	  }
   }  
@@ -119,6 +119,7 @@ public class SubscriberManagerTest {
 		    map2.put("journal1", Arrays.asList(true, false));
 		    map2.put("journal2", Arrays.asList(true, true));
 		    map2.put("journal3", Arrays.asList(true));
+		    map2.put("journal5", Arrays.asList(false));
 		    assertEquals(map2, reader.getAllSubscriptions("user2").get());
 		    
 		    Map<String, List<Boolean>> map3 = new HashMap<String, List<Boolean>>();
@@ -147,7 +148,7 @@ public class SubscriberManagerTest {
 		    SubscriberReader reader = injector.getInstance(SubscriberReader.class);
 		    
 		    /* getMonthlyBudget */
-		    assertEquals(OptionalInt.empty(), reader.getMonthlyBudget("userNE").get());
+		    assertEquals(OptionalInt.of(0), reader.getMonthlyBudget("userNE").get());
 		    assertEquals(OptionalInt.of(170), reader.getMonthlyBudget("user1").get());
 		    assertEquals(OptionalInt.of(710), reader.getMonthlyBudget("user2").get());
 		    assertEquals(OptionalInt.of(160), reader.getMonthlyBudget("user3").get());
@@ -155,7 +156,6 @@ public class SubscriberManagerTest {
 		    assertEquals(OptionalInt.of(160), reader.getMonthlyBudget("user5").get());
 
 		    /* getMonthlyIncome */
-		    //TODO check about cancel + if multiple scribe the same journal
 		    assertEquals(OptionalInt.empty(), reader.getMonthlyIncome("NotExist").get());
 		    assertEquals(OptionalInt.of(750), reader.getMonthlyIncome("journal1").get());
 		    assertEquals(OptionalInt.of(700), reader.getMonthlyIncome("journal2").get());
@@ -207,6 +207,7 @@ public class SubscriberManagerTest {
 		    assertEquals(map4, reader.getSubscribers("journal4").get());
 		    
 		    Map<String, List<Boolean>> map5 = new HashMap<String, List<Boolean>>();
+		    map5.put("user2", Arrays.asList(false));
 		    assertEquals(map5, reader.getSubscribers("journal5").get());
 	  }
   } 

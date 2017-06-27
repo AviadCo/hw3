@@ -119,11 +119,8 @@ public class DoubleKeyDictImpl implements DoubleKeyDict {
 				for (int i = Integer.parseInt(lines[0]); i < end; i += 2) {
 					final int line = i;
 
-					//TODO check on empty here
-					$.put(storer.thenCompose(s -> s.isPresent() ?
-							s.get().read(line) : CompletableFuture.completedFuture(Optional.empty())).get().get(),
-						  storer.thenCompose(s -> s.isPresent() ?
-						    s.get().read(line + 1) : CompletableFuture.completedFuture(Optional.empty())).get().get());
+					$.put(storer.thenCompose(s -> s.get().read(line)).get().get(),
+						  storer.thenCompose(s -> s.get().read(line + 1)).get().get());
 				}
 			} catch (InterruptedException | ExecutionException e) {
 				return new HashMap<String, String>();

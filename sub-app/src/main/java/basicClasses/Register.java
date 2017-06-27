@@ -11,6 +11,7 @@ public class Register {
 	
 	public static final String SUBSCRIPTION_TYPE = "SUBSCRIPTION_TYPE";
 	public static final String CANCEL_TYPE       = "CANCEL_TYPE";
+	public static final String FAKE_TYPE         = "FAKE_TYPE";
 	
 	public Register(String userID, String journalID, Long journalPrice, String type) {
 		this.userID = userID;

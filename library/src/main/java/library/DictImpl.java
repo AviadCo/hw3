@@ -19,6 +19,7 @@ import il.ac.technion.cs.sd.sub.ext.FutureLineStorageFactory;
  *      create an instance
  */
 public class DictImpl implements Dict {
+	private boolean failureOccured;
 	private final CompletableFuture<Optional<FutureLineStorage>> storer;
 	private final Map<String, String> pairs = new HashMap<>();
 	private CompletableFuture<?> storingStatus;
@@ -28,13 +29,18 @@ public class DictImpl implements Dict {
 			@Assisted String name) {
 		storer = factory.open(name);
 		storingStatus = storer;
+		failureOccured = false;
 	}
 
 	public CompletableFuture<Boolean> store() {
 		(storingStatus = storeToStorage(pairs, storer, storer)).thenAccept(s -> {
 		});
 		
-		return CompletableFuture.completedFuture(true);
+		if (storingStatus.equals(CompletableFuture.completedFuture(false))) {
+			failureOccured = true;
+		}
+		
+		return CompletableFuture.completedFuture(!failureOccured);
 	}
 
 	static CompletableFuture<?> storeToStorage(Map<String, String> map, CompletableFuture<Optional<FutureLineStorage>> store,
@@ -43,6 +49,7 @@ public class DictImpl implements Dict {
 			current = current.thenCompose(v -> store.thenCompose(s -> s.isPresent() ? s.get().appendLine(key) : CompletableFuture.completedFuture(false)));
 			current = current.thenCompose(v -> store.thenCompose(s -> s.isPresent() ? s.get().appendLine(map.get(key)) : CompletableFuture.completedFuture(false)));
 		}
+				
 		return current;
 	}
 
@@ -58,7 +65,11 @@ public class DictImpl implements Dict {
 
 	@Override
 	public CompletableFuture<Optional<String>> find(String key) {
-		return storingStatus
-				.thenCompose(v -> BinarySearch.valueOf(storer, key, 0, storer.thenCompose(s -> s.get().numberOfLines())));
+		if (failureOccured) {
+			return CompletableFuture.completedFuture(Optional.empty());
+		} else {
+			return storingStatus
+					.thenCompose(v -> BinarySearch.valueOf(storer, key, 0, storer.thenCompose(s -> s.get().numberOfLines())));	
+		}
 	}
 }
