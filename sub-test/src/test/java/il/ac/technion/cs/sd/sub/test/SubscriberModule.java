@@ -29,12 +29,7 @@ public class SubscriberModule extends AbstractModule {
 	  
 	  install(new FactoryModuleBuilder().implement(Dict.class, DictImpl.class)
 				.build(DictFactory.class));
-	  	  
-	  install(new TestLineStorageModule()); //TODO remember to remove this bind
-//	  bind(FutureLineStorageFactory.class).to(TestStorerFactory.class); //TODO remember to remove this bind
-//	  bind(FutureLineStorage.class).to(TestStorer.class);
-//	  bind(FutureLineStorageFactory.class).to(TestStorerFactory.class);
-//	  bind(FutureLineStorage.class).to(TestStorer.class);
+	  install(new TestLineStorageModule());
   }
 	  
 	@Provides

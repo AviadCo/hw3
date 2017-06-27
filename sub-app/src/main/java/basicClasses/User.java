@@ -39,7 +39,7 @@ public class User {
 		String arr[] = s.split(USER_SPLITER);
 		
 		List<Register> registerationList = new ArrayList<Register>();
-		for (String registerStr : Arrays.copyOfRange(arr, 2, arr.length)) {			
+		for (String registerStr : Arrays.copyOfRange(arr, 1, arr.length)) {			
 			registerationList.add(Register.createObject(registerStr));
 		}
 				

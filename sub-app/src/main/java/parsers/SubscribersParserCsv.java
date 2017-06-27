@@ -18,7 +18,7 @@ import basicClasses.Register;
 public class SubscribersParserCsv {
 	
 	private static final String CANCEL_TYPE_TAG       = "cancel";
-	private static final String SUBSCRIPTION_TYPE_TAG = "subscription";
+	private static final String SUBSCRIPTION_TYPE_TAG = "subscriber";
 	private static final String JOURNAL_TYPE_TAG      = "journal";
 		
 	/**

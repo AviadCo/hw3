@@ -82,7 +82,7 @@ public class SubscriberManager implements SubscriberInitializer, SubscriberReade
 		users.store();
 		journals.store();
 		
-		return null;
+		return CompletableFuture.completedFuture(null);
 	}
 	
 	@Override
@@ -117,7 +117,9 @@ public class SubscriberManager implements SubscriberInitializer, SubscriberReade
 				return Optional.of(false);
 			} else if (was) {
 				/* wasSubscribed */
-				return Optional.of(true);
+				return Optional.of(relevantRegisteration
+						.stream()
+						.filter(r -> r.getType().equals(Register.SUBSCRIPTION_TYPE)).count() > 0);
 			} else {
 				/* isSubscribed */
 				return Optional.of(relevantRegisteration.get(relevantRegisteration.size() - 1)
@@ -143,15 +145,33 @@ public class SubscriberManager implements SubscriberInitializer, SubscriberReade
 				return Optional.of(false);
 			} else if (was) {
 				/* wasCanceled */
-				return Optional.of(relevantRegisteration
-						.stream()
-						.filter(r -> r.getType().equals(Register.CANCEL_TYPE))
-						.count() > 0);
+				int i = 0;
+				for (Register register : relevantRegisteration) {
+					if (register.getType().equals(Register.SUBSCRIPTION_TYPE)) {
+						break;
+					}
+					
+					++i;
+				}
+				
+				while (i < relevantRegisteration.size()) {
+					if (relevantRegisteration.get(i).getType().equals(Register.CANCEL_TYPE)) {
+						return Optional.of(true);
+					}
+					
+					++i;
+				}
+				
+				return Optional.of(false);
 			} else {
 				/* isCanceled */
-				return Optional.of(relevantRegisteration.get(relevantRegisteration.size() - 1)
-										.getType()
-										.equals(Register.CANCEL_TYPE));
+				return Optional.of(
+						(relevantRegisteration
+						.stream()
+						.filter(r -> r.getType().equals(Register.SUBSCRIPTION_TYPE)).count() > 0) &&
+						(relevantRegisteration.get(relevantRegisteration.size() - 1)
+						.getType()
+						.equals(Register.CANCEL_TYPE)));
 			}			
 		});
 	}
