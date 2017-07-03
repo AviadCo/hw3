@@ -3,6 +3,7 @@ package library;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -19,35 +20,41 @@ import il.ac.technion.cs.sd.sub.ext.FutureLineStorageFactory;
  *      create an instance
  */
 public class DictImpl implements Dict {
-	private boolean failureOccured;
 	private final CompletableFuture<Optional<FutureLineStorage>> storer;
 	private final Map<String, String> pairs = new HashMap<>();
 	private CompletableFuture<?> storingStatus;
 
+	private CompletableFuture<Optional<FutureLineStorage>> recursiveOpen(FutureLineStorageFactory factory, String name) {
+		CompletableFuture<Optional<FutureLineStorage>> futureLineStorage = factory.open(name);
+		
+		return futureLineStorage.thenCompose(f -> f.isPresent() ? futureLineStorage : recursiveOpen(factory, name));
+	}
+	
 	@Inject
 	DictImpl(FutureLineStorageFactory factory, //
 			@Assisted String name) {
-		storer = factory.open(name);
+		storer = recursiveOpen(factory, name);
 		storingStatus = storer;
-		failureOccured = false;
 	}
-
+		
 	public CompletableFuture<Boolean> store() {
 		(storingStatus = storeToStorage(pairs, storer, storer)).thenAccept(s -> {
 		});
-		
-		if (storingStatus.equals(CompletableFuture.completedFuture(false))) {
-			failureOccured = true;
-		}
-		
-		return CompletableFuture.completedFuture(!failureOccured);
+				
+		return CompletableFuture.completedFuture(true);
 	}
 
+	private static CompletableFuture<Boolean> recursiveAppendLine(Optional<FutureLineStorage> store, String toStore) {
+		CompletableFuture<Boolean> result = store.get().appendLine(toStore);
+		
+		return result.thenCompose(res -> res ? result : recursiveAppendLine(store, toStore));
+	}
+	
 	static CompletableFuture<?> storeToStorage(Map<String, String> map, CompletableFuture<Optional<FutureLineStorage>> store,
 			CompletableFuture<?> current) {
 		for (String key : map.keySet().stream().sorted().collect(Collectors.toList())) {
-			current = current.thenCompose(v -> store.thenCompose(s -> s.isPresent() ? s.get().appendLine(key) : CompletableFuture.completedFuture(false)));
-			current = current.thenCompose(v -> store.thenCompose(s -> s.isPresent() ? s.get().appendLine(map.get(key)) : CompletableFuture.completedFuture(false)));
+			current = current.thenCompose(v -> store.thenCompose(s -> recursiveAppendLine(s, key)));
+			current = current.thenCompose(v -> store.thenCompose(s -> recursiveAppendLine(s, map.get(key))));
 		}
 				
 		return current;
@@ -63,13 +70,15 @@ public class DictImpl implements Dict {
 		pairs.putAll(ps);
 	}
 
+	private static CompletableFuture<OptionalInt> recursiveNumberOfLines(Optional<FutureLineStorage> store) {
+		CompletableFuture<OptionalInt> result = store.get().numberOfLines();
+		
+		return result.thenCompose(res -> res.isPresent() ? result : recursiveNumberOfLines(store));
+	}
+	
 	@Override
 	public CompletableFuture<Optional<String>> find(String key) {
-		if (failureOccured) {
-			return CompletableFuture.completedFuture(Optional.empty());
-		} else {
-			return storingStatus
-					.thenCompose(v -> BinarySearch.valueOf(storer, key, 0, storer.thenCompose(s -> s.get().numberOfLines())));	
-		}
+		return storingStatus
+				.thenCompose(v -> BinarySearch.valueOf(storer, key, 0, storer.thenCompose(s -> recursiveNumberOfLines(s))));
 	}
 }

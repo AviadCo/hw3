@@ -82,7 +82,6 @@ public class SubscriberManager implements SubscriberInitializer, SubscriberReade
 			     .stream()
 			     .collect(Collectors.toMap(e -> e.getKey(), e -> Journal.createString(e.getValue()))));
 		
-		//TODO check failures
 		users.store();
 		journals.store();
 		
