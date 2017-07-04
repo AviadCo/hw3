@@ -4,7 +4,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import il.ac.technion.cs.sd.sub.app.SubscriberInitializer;
 import il.ac.technion.cs.sd.sub.app.SubscriberReader;
-import il.ac.technion.cs.sd.sub.ext.FutureLineStorage;
 import il.ac.technion.cs.sd.sub.ext.LineStorageModule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,7 +12,6 @@ import org.junit.rules.Timeout;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +24,7 @@ public class ExampleTest {
   private static Injector setupAndGetInjector(String fileName) throws Exception {
       String fileContents =
         new Scanner(new File(ExampleTest.class.getResource(fileName).getFile())).useDelimiter("\\Z").next();
-    Injector injector = Guice.createInjector(new SubscriberModule());//TODO for debug only, new LineStorageModule());
+    Injector injector = Guice.createInjector(new SubscriberModule(), new LineStorageModule());
     SubscriberInitializer si = injector.getInstance(SubscriberInitializer.class);
     CompletableFuture<Void> setup =
         fileName.endsWith("csv") ? si.setupCsv(fileContents) : si.setupJson(fileContents);

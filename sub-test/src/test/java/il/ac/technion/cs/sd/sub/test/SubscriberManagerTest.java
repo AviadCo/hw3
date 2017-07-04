@@ -4,6 +4,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import il.ac.technion.cs.sd.sub.app.SubscriberInitializer;
 import il.ac.technion.cs.sd.sub.app.SubscriberReader;
+import il.ac.technion.cs.sd.sub.ext.LineStorageModule;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -15,19 +17,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 
 public class SubscriberManagerTest {
 
-  //@Rule public Timeout globalTimeout = Timeout.seconds(50);
+  @Rule public Timeout globalTimeout = Timeout.seconds(50);
 
   private static Injector setupAndGetInjector(String fileName) throws Exception {
       String fileContents =
         new Scanner(new File(ExampleTest.class.getResource(fileName).getFile())).useDelimiter("\\Z").next();
-    Injector injector = Guice.createInjector(new SubscriberModule());//TODO for debug only, new LineStorageModule());
+    Injector injector = Guice.createInjector(new SubscriberModule(), new LineStorageModule());
     SubscriberInitializer si = injector.getInstance(SubscriberInitializer.class);
     CompletableFuture<Void> setup =
         fileName.endsWith("csv") ? si.setupCsv(fileContents) : si.setupJson(fileContents);
