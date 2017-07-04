@@ -13,8 +13,6 @@ public class LibraryModule extends AbstractModule {
 	protected void configure() {
 		install(new FactoryModuleBuilder().implement(Dict.class, DictImpl.class)//
 				.build(DictFactory.class));
-		install(new FactoryModuleBuilder().implement(DoubleKeyDict.class, DoubleKeyDictImpl.class)
-				.build(DoubleKeyDictFactory.class));
 	}
 
 }
