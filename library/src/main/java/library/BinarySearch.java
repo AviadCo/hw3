@@ -39,24 +39,29 @@ class BinarySearch {
 		return of(storer, key, low / 2, high / 2 - 1);
 	}
 	
+	private static CompletableFuture<Optional<String>> recursiveRead(Optional<FutureLineStorage> store, int index) {
+		CompletableFuture<Optional<String>> result = store.get().read(index);
+		
+		return result.thenCompose(res -> res.isPresent() ? result : recursiveRead(store, index));
+	}	
 	private static CompletableFuture<Optional<String>> of(CompletableFuture<Optional<FutureLineStorage>> storer, String key, int low, int high) {
 		if (high < low)
 			return CompletableFuture.completedFuture(Optional.empty());
 		final int mid = (low + high) / 2;
 				
 		return storer.
-				thenCompose(s -> s.isPresent() ? s.get().read(2 * mid) : CompletableFuture.completedFuture(Optional.empty())).
+				thenCompose(s -> recursiveRead(s, 2 * mid)).
 				thenCompose(new Function<Optional<String>, CompletableFuture<Optional<String>>>() {
 			@Override
 			public CompletableFuture<Optional<String>> apply(Optional<String> current) {
 				if (!current.isPresent()) {
-					CompletableFuture.completedFuture(Optional.empty());
+					return CompletableFuture.completedFuture(Optional.empty());
 				}
 				
 				int comparison = current.get().compareTo(key);
 				
 				if (comparison == 0)
-					return storer.thenCompose(s -> s.get().read(2 * mid + 1));
+					return storer.thenCompose(s -> recursiveRead(s, 2 * mid + 1));
 				if (comparison < 0)
 					return of(storer ,key , mid + 1, high);
 				
